@@ -1,0 +1,12 @@
+body{
+    background-color: lightblue;
+}
+
+/* Color personalizado para Alke Solutions */
+.navbar {
+    background-color: #1a237e !important; /* Azul oscuro corporativo */
+}
+
+.nav-link:hover {
+    color: #ffd600 !important; /* Amarillo al pasar el mouse */
+}

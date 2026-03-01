@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card border-danger shadow mx-auto" style="max-width: 500px;">
+        <div class="card-header bg-danger text-white text-center">
+            <h3 class="mb-0">¿Eliminar este equipo?</h3>
+        </div>
+        <div class="card-body text-center">
+            <p class="lead">Estás a punto de borrar permanentemente el siguiente registro:</p>
+            <div class="alert alert-secondary">
+                <strong>Serie:</strong> {{ producto.serie }} <br>
+                <strong>Modelo:</strong> {{ producto.marca }} {{ producto.modelo }}
+            </div>
+            <p class="text-danger small">Esta acción no se puede deshacer.</p>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+                    <a href="{% url 'lista_producto' %}" class="btn btn-outline-secondary">No, cancelar y volver</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

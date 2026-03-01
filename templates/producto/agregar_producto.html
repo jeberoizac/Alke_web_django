@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow" style="max-width: 600px; margin: auto;">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Registrar Nuevo Equipo</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %} {{ form.as_p }}
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-success">Guardar Equipo</button>
+                    <a href="{% url 'lista_producto' %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
