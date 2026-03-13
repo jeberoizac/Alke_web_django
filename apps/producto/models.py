@@ -27,5 +27,14 @@ class Producto(models.Model):
     fecha_ingreso = models.DateTimeField(default=timezone.now)
     fecha_salida = models.DateTimeField(null=True, blank=True)
 
+    # Campos para control de registros
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
+
+    def eliminar_logico(self):
+        self.deleted_at = timezone.now()
+        self.save()
+
     def __str__(self):
         return f"{self.modelo} - {self.serie} ({self.get_estado_display()})"

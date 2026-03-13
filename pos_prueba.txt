@@ -1,0 +1,6 @@
+
+Serie		Modelo	Estado	Observacion			Acciones
+1852808531	Pax A920 Pro	Nuevo	--	 
+1852873636	Pax A920 Pro	Equipo Sustituido/Cambiado 🔄	cambio por falla	 
+1851892109	Pax A920 Pro	Nuevo	--	 
+1852875655	Pax A920 Pro	Nuevo	--	 

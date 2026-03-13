@@ -7,8 +7,7 @@ from .models import Producto
 # Create your views here.
 ################  Crud basico de Producto  ################
 def lista_producto(request):
-     pos = Producto.objects.all()
-   
+     pos = Producto.objects.filter(deleted_at__isnull=True).order_by('-fecha_ingreso')     
        # OJO: Verifica que el nombre del template sea exacto a tu carpeta
      return render(request, 'producto/lista_producto.html', {'productos': pos})
 
@@ -29,7 +28,11 @@ def agregar_producto(request):
     return render(request, 'producto/agregar_producto.html', {'form': form})
 
 def editar_producto(request, producto_id):
-    producto = get_object_or_404(Producto, pk=producto_id)
+    producto = get_object_or_404(
+    Producto,
+    pk=producto_id,
+    deleted_at__isnull=True
+    )
     
     if request.method == 'POST':
         form = ProductoForm(request.POST, instance=producto)
@@ -49,7 +52,8 @@ def eliminar_producto(request, producto_id):
     
     if request.method == 'POST':
         # 2. Si se confirma el envío del formulario, eliminamos
-        producto.delete()
+        #producto.delete()
+        producto.eliminar_logico()
         # Aquí el mensaje de éxito del borrado, puedes personalizarlo como quieras
         messages.info(request, f"El equipo con serie {producto.serie} fue eliminado correctamente.")
         return redirect('lista_producto')
