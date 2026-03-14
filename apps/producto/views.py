@@ -16,7 +16,10 @@ def agregar_producto(request):
     if request.method == 'POST':
         form = ProductoForm(request.POST)
         if form.is_valid():
-            producto = form.save() # ¡Aquí se guarda en la base de datos!
+
+            producto = form.save(commit=False) # Creamos el objeto pero no lo guardamos aún
+            producto.created_by = request.user # Asignamos el usuario que creó el producto
+            producto.save() # Ahora sí guardamos el producto en la base de datos
             messages.success(request, f"El equipo con serie {producto.serie} fue agregado correctamente.")
             return redirect('lista_producto') # Nos manda de vuelta a la lista
         else:
@@ -37,7 +40,9 @@ def editar_producto(request, producto_id):
     if request.method == 'POST':
         form = ProductoForm(request.POST, instance=producto)
         if form.is_valid():
-            form.save()
+            producto = form.save(commit=False)
+            producto.updated_by = request.user
+            producto.save()
             messages.info(request, f"El equipo con serie {producto.serie} fue editado correctamente.")
             return redirect('lista_producto')
     else:
