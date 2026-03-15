@@ -33,10 +33,13 @@
                         </td>
                         <td><small class="text-muted">{{ p.observaciones|default:"--" }}</small></td>
                         <td>
+                            {% if perms.producto.change_producto %}
                             <a href="{% url 'editar_producto' p.id %}" class="btn btn-sm btn-outline-primary">Editar</a>
-
+                            {% endif %}
+                            
+                            {% if perms.producto.delete_producto %}
                             <a href="{% url 'eliminar_producto' p.id %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
-
+                            {% endif %}
                         </td>
                     </tr>
                     {% empty %}

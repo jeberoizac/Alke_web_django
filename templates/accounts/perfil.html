@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Perfil de usuario</h2>
+
+<div class="card" style="max-width:500px">
+
+<div class="card-body">
+
+<p><strong>Nombre:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+
+<p><strong>Usuario:</strong> {{ user.username }}</p>
+
+<p><strong>Email:</strong> {{ user.email }}</p>
+
+{% if user.perfil.foto %}
+<img src="{{ user.perfil.get_foto_url }}" width="120" class="rounded-circle shadow">
+{% endif %}
+
+</div>
+
+</div>
+
+{% endblock %}

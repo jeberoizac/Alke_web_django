@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apps.home',
     'apps.producto',
+    'apps.accounts',
 ]
 
 MIDDLEWARE = [
@@ -125,3 +126,15 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
     ]  # Esta línea para indicar la carpeta de archivos estáticos
+
+# Configuración para el login
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
+
+# Configuración de Correo para Desarrollo (Muestra el correo en la terminal)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+#Media files (archivos subidos por usuarios)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'  # Carpeta donde se guardarán los archivos subidos

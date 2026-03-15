@@ -1,17 +1,20 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages 
 from .forms import ProductoForm
+from django.contrib.auth.decorators import login_required, permission_required
 
 from .models import Producto
 
 # Create your views here.
 ################  Crud basico de Producto  ################
+@login_required
 def lista_producto(request):
      pos = Producto.objects.filter(deleted_at__isnull=True).order_by('-fecha_ingreso')     
        # OJO: Verifica que el nombre del template sea exacto a tu carpeta
      return render(request, 'producto/lista_producto.html', {'productos': pos})
 
 #agregar producto con formulario
+@login_required
 def agregar_producto(request):
     if request.method == 'POST':
         form = ProductoForm(request.POST)
@@ -29,6 +32,9 @@ def agregar_producto(request):
         form = ProductoForm()
     
     return render(request, 'producto/agregar_producto.html', {'form': form})
+
+@login_required
+@permission_required('producto.change_producto', raise_exception=True)
 
 def editar_producto(request, producto_id):
     producto = get_object_or_404(
@@ -50,7 +56,8 @@ def editar_producto(request, producto_id):
     
     return render(request, 'producto/editar_producto.html', {'form': form, 'producto': producto})
 
-
+@login_required
+@permission_required('producto.delete_producto', raise_exception=True)
 def eliminar_producto(request, producto_id):
     # 1. Buscamos el producto por su ID (pk)
     producto = get_object_or_404(Producto, pk=producto_id)
