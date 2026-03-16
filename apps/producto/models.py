@@ -20,7 +20,7 @@ class BaseModel(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="created_records"
+        related_name="%(class)s_created" # Esto genera un related_name dinámico basado en el nombre de la clase (ej: producto_created
     )
 
     updated_by = models.ForeignKey(
@@ -28,8 +28,11 @@ class BaseModel(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="updated_records"
+        related_name="%(class)s_updated" # Esto genera un related_name dinámico basado en el nombre de la clase (ej: producto_updated
     )
+
+    class Meta:
+        abstract = True
 
     #Metodo para eliminar logico
     def eliminar_logico(self):

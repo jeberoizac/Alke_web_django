@@ -5,50 +5,123 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1>Lista de Productos</h1>
-     <a href="{% url 'agregar_producto' %}" class="btn btn-sm btn-outline-primary">Agregar</a>
-     <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Serie </th>
-                <th>Modelo</th>
-                <th>Estado</th>
-                <th>Observacion</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-     <tbody>
-                    {% for p in productos %}
-                    <tr>
-                        <td><strong>{{ p.serie }}</strong></td>
-                        <td>{{ p.marca }} {{ p.modelo }}</td>
-                        <td>
-                            {% if p.estado == 'nuevo' %}
-                                <span class="badge bg-success">Nuevo</span>
-                            {% elif p.estado == 'falla' %}
-                                <span class="badge bg-danger">Falla</span>
-                            {% else %}
-                                <span class="badge bg-warning text-dark">{{ p.get_estado_display }}</span>
-                            {% endif %}
-                        </td>
-                        <td><small class="text-muted">{{ p.observaciones|default:"--" }}</small></td>
-                        <td>
-                            {% if perms.producto.change_producto %}
-                            <a href="{% url 'editar_producto' p.id %}" class="btn btn-sm btn-outline-primary">Editar</a>
-                            {% endif %}
-                            
-                            {% if perms.producto.delete_producto %}
-                            <a href="{% url 'eliminar_producto' p.id %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="text-center">No hay productos registrados aún.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-    </table> 
-</div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Lista de Productos</h1>
+        <a href="{% url 'agregar_producto' %}" class="btn btn-outline-primary">
+             + Agregar Producto
+        </a>
+    </div>
 
+    <!-- SECCIÓN DE FILTROS -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body bg-light">
+            <form method="GET" class="row g-3">
+                <!-- Filtro por Serie o Modelo -->
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold">Buscar por Serie/Modelo</label>
+                    <input type="text" name="q" class="form-control" placeholder="Ej: HG8245..." value="{{ request.GET.q }}">
+                </div>
+                
+                <!-- Filtro por Estado -->
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold">Estado</label>
+                    <select name="estado" class="form-select">
+                        <option value="">Todos los estados</option>
+                        {% for valor, etiqueta in estados %}
+                            <option value="{{ valor }}" {% if request.GET.estado == valor %}selected{% endif %}>
+                                {{ etiqueta }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-dark w-100 text-uppercase">Filtrar</button>
+                    <a href="{% url 'lista_producto' %}" class="btn btn-outline-secondary ms-2 text-uppercase">Limpiar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TABLA DE PRODUCTOS -->
+    <div class="table-responsive">
+        <table class="table table-striped shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Serie</th>
+                    <th>Modelo</th>
+                    <th>Estado</th>
+                    <th>Observación</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in page_obj %}
+                <tr>
+                    <td class="align-middle"><strong>{{ p.serie }}</strong></td>
+                    <td class="align-middle">{{ p.marca }} {{ p.modelo }}</td>
+                    <td class="align-middle">
+                        {% if p.estado == 'nuevo' %}
+                            <span class="badge bg-success">Nuevo</span>
+                        {% elif p.estado == 'falla' %}
+                            <span class="badge bg-danger">Falla</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">{{ p.get_estado_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="align-middle"><small class="text-muted">{{ p.observaciones|default:"--" }}</small></td>
+                    <td class="text-center align-middle">
+                        {% if perms.producto.change_producto %}
+                            <a href="{% url 'editar_producto' p.id %}" class="btn btn-sm btn-outline-primary">Editar</a>
+                        {% endif %}
+                        
+                        {% if perms.producto.delete_producto %}
+                            <a href="{% url 'eliminar_producto' p.id %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-muted">No se encontraron productos con esos criterios.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- BLOQUE DE PAGINACIÓN -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Navegacion de productos">
+        <ul class="pagination justify-content-center">
+            
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <!-- Agregamos los filtros actuales a la URL de la página -->
+                    <a class="page-link" href="?page=1&q={{ request.GET.q }}&estado={{ request.GET.estado }}">&laquo; Primero</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}&estado={{ request.GET.estado }}">Anterior</a>
+                </li>
+            {% endif %}
+
+            <li class="page-item disabled">
+                <span class="page-link text-dark fw-bold">
+                    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                </span>
+            </li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}&estado={{ request.GET.estado }}">Siguiente</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&q={{ request.GET.q }}&estado={{ request.GET.estado }}">Último &raquo;</a>
+                </li>
+            {% endif %}
+
+        </ul>
+    </nav>
+    {% endif %}
+</div>
 {% endblock %}

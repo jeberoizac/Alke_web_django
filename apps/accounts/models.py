@@ -4,9 +4,10 @@ from django.conf import settings
 import os
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from apps.producto.models import BaseModel
 
 # Create your models here.
-class Perfil(models.Model):
+class Perfil(BaseModel):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
