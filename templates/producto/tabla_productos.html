@@ -1,0 +1,79 @@
+<div id="contenedor-tabla" class="table-responsive">
+    <table class="table table-striped shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Serie</th>
+                <th>Modelo</th>
+                <th>Estado</th>
+                <th>Observación</th>
+                <th class="text-center">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in page_obj %}
+            <tr>
+                <td class="align-middle"><strong>{{ p.serie }}</strong></td>
+                <td class="align-middle">{{ p.marca }} {{ p.modelo }}</td>
+                <td class="align-middle">
+                    {% if p.estado == 'nuevo' %}
+                        <span class="badge bg-success">Nuevo</span>
+                    {% elif p.estado == 'falla' %}
+                        <span class="badge bg-danger">Falla</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark">{{ p.get_estado_display }}</span>
+                    {% endif %}
+                </td>
+                <td class="align-middle"><small class="text-muted">{{ p.observaciones|default:"--" }}</small></td>
+                <td class="text-center align-middle">
+                    {% if perms.producto.change_producto %}
+                        <a href="{% url 'editar_producto' p.id %}" class="btn btn-sm btn-outline-primary">Editar</a>
+                    {% endif %}
+                    {% if perms.producto.delete_producto %}
+                        <a href="{% url 'eliminar_producto' p.id %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center py-4 text-muted">No se encontraron productos.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Navegacion de productos">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" 
+                       hx-get="?page=1&q={{ request.GET.q }}&estado={{ request.GET.estado }}" 
+                       hx-target="#contenedor-tabla" hx-swap="outerHTML">&laquo; Primero</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" 
+                       hx-get="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}&estado={{ request.GET.estado }}" 
+                       hx-target="#contenedor-tabla" hx-swap="outerHTML">Anterior</a>
+                </li>
+            {% endif %}
+
+            <li class="page-item disabled">
+                <span class="page-link text-dark fw-bold">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" 
+                       hx-get="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}&estado={{ request.GET.estado }}" 
+                       hx-target="#contenedor-tabla" hx-swap="outerHTML">Siguiente</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" 
+                       hx-get="?page={{ page_obj.paginator.num_pages }}&q={{ request.GET.q }}&estado={{ request.GET.estado }}" 
+                       hx-target="#contenedor-tabla" hx-swap="outerHTML">Último &raquo;</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>

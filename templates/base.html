@@ -56,7 +56,19 @@
 
                 <li class="dropdown-item-text">
                     <strong>{{ user.first_name }} {{ user.last_name }}</strong><br>
-                    <small class="text-muted">{{ user.username }}</small>
+                    
+                   <small class="text-muted">@{{ user.username }}</small>
+                    </li>
+
+                    <li class="dropdown-item-text border-top pt-2">
+                        <span class="badge bg-info text-dark">
+                            {% for group in user.groups.all %}
+                                {{ group.name }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                Sin Rol
+                            {% endfor %}
+                        </span>
+                    </li>
                 </li>
 
                 <li><hr class="dropdown-divider"></li>

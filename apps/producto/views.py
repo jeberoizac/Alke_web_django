@@ -10,41 +10,41 @@ from django.db.models import Q # Para búsquedas complejas (Serie O Modelo)
 ################  Crud basico de Producto  ################
 @login_required
 def lista_producto(request):
-     # 1. Traemos los productos activos
+    # 1. Traemos los productos activos
     productos_list = Producto.objects.filter(deleted_at__isnull=True).order_by('-fecha_ingreso')
     
-    # 2. Capturamos los filtros de la URL (si existen)
+    # 2. Capturamos los filtros
     query_marca = request.GET.get('q')
     query_estado = request.GET.get('estado')
 
-    # 3. Aplicamos los filtros si el usuario seleccionó algo
+    # 3. Aplicamos filtros
     if query_marca:
         productos_list = productos_list.filter(Q(serie__icontains=query_marca) | Q(modelo__icontains=query_marca))
     
     if query_estado:
         productos_list = productos_list.filter(estado=query_estado)
 
-
-    #4 paginacion y filtros
-    # Configuramos el Paginador (Ejemplo: 5 productos por página)
+    # 4. Paginación
     paginator = Paginator(productos_list, 5) 
-    
-    # Obtenemos el número de página que viene en la URL (?page=2)
     page_number = request.GET.get('page')
-    
-    # Obtenemos el objeto de la página actual
     page_obj = paginator.get_page(page_number)
 
-     # Pasamos los estados para llenar el select del filtro en el HTML
     context = {
         'page_obj': page_obj,
-        'marcas': Producto.objects.values_list('marca', flat=True).distinct(), # Lista de marcas únicas
+        'marcas': Producto.objects.values_list('marca', flat=True).distinct(),
         'estados': Producto.ESTADO_CHOICES,
         'query_marca': query_marca,
         'query_estado': query_estado,
     }
     
+    # --- LOGICA HTMX ---
+    # Si la petición tiene el header 'HX-Request', solo enviamos la tabla
+    if request.headers.get('HX-Request'):
+        return render(request, 'producto/tabla_productos.html', context)
+    
+    # Si es una carga normal del navegador, enviamos todo el layout
     return render(request, 'producto/lista_producto.html', context)
+
 #agregar producto con formulario
 @login_required
 def agregar_producto(request):
